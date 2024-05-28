@@ -1,24 +1,17 @@
 import os
 
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 
 dialect = 'postgresql'
-username = str(os.environ.get('DATABASEUSERNAME'))
-password = str(os.environ.get('PASSWORD'))
+username = 'postgres'
+password = str(os.environ.get('password'))
 host = 'localhost'
 port = 5432
-database = str(os.environ.get('DATABASE'))
+database = str(os.environ.get('database'))
 
-DB_URL = URL.create(
-    drivername=dialect,
-    username=username,
-    password=password,
-    host=host,
-    port=port,
-    database=database
-)
+DB_URL = f'postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}'
 
 engine = create_engine(DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -34,3 +27,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+if __name__ == '__main__':
+    get_db()
+    print(DB_URL, password)
